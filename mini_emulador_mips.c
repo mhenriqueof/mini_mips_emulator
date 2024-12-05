@@ -88,7 +88,7 @@ int verifica_quantidade_partes(char instrucao[], int *quantidade_partes) {
         cont++;
         if (cont > 4) {return 0;}
     } 
-    if (cont == 1) {return 0;}
+    if (cont < 2) {return 0;}
     *quantidade_partes = cont;
     return 1;
 }
@@ -120,6 +120,8 @@ int verifica_parte_central(char instrucao[], int quantidade_partes) {
 
     char copia_instrucao[30];
     strcpy(copia_instrucao, instrucao);
+
+    char *operacao = strtok(copia_instrucao, " ");
 
     for (int i = 2; i <= quantidade_partes-1; i++) {
         char *token = strtok(NULL, " ");
