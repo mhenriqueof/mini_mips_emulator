@@ -1,2 +1,2 @@
-# mini_mips_emulator
-Project developed in my 2nd semester of college.
+# Mini MIPS Emulator
+Project created in my second semester of college, applying clean code principles.
