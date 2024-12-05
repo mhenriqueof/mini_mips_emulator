@@ -290,7 +290,7 @@ char **aloca_log_instrucoes(int linhas, int colunas) {
 }
 
 char **realoca_log_instrucoes(char **log_instrucoes, int linhas_atual, int novas_linhas, int colunas) {
-    char **novo_log_instrucoes = (char**)realloc(log_instrucoes, novas_linhas * sizeof(char*));
+    char **novo_log_instrucoes = (char**) realloc(log_instrucoes, novas_linhas * sizeof(char*));
     if (novo_log_instrucoes == 0) {
         printf("Falha ao realocar log instrucoes.\n");
         return 0;
