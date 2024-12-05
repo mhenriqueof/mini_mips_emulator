@@ -48,7 +48,7 @@ void recebe_instrucao(char instrucao[], int quantidade_log) {
     printf("\n");
 }
 
-void atualiza_quantidade_log_pc_log_instrucoes(int *quantidade_log, int *pc, char **log_instrucoes, char instrucao[]) {
+void atualiza_log_instrucoes_pc_quantidade_log(char **log_instrucoes, char instrucao[], int *pc, int *quantidade_log) {
     strcpy(log_instrucoes[*quantidade_log], instrucao);
     *pc += 4;
     *quantidade_log = (*pc+4)/4;
@@ -333,7 +333,7 @@ int main() {
 
         if (verifica_instrucao(instrucao, &quantidade_partes)) {
             if (executa_instrucao(instrucao, quantidade_partes, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7, &pc)) {
-                atualiza_quantidade_log_pc_log_instrucoes(&quantidade_log, &pc, log_instrucoes, instrucao);
+                atualiza_log_instrucoes_pc_quantidade_log(log_instrucoes, instrucao, &pc, &quantidade_log);
                 log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_log, quantidade_log+1, 30);
                 if (log_instrucoes == 0) {break;}
                 continue;
