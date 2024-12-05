@@ -1,2 +1,2 @@
 # Mini MIPS Emulator
-Project created in my second semester of college, applying clean code principles.
+Project created in C for the Computer Architecture course, using Clean Code principles.
