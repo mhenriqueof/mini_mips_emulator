@@ -24,10 +24,9 @@ void menu_inicial() {
     linha();
 } 
 
-void mostra_main_pc_instrucoes_registradores(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7, int pc, char **log_instrucoes) {
+void mostra_main_pc_instrucoes_registradores(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7, int quantidade_log, char **log_instrucoes) {
     printf("main:\n");
-    int tamanho_instrucoes = pc / 4;
-    for (int i = 0; i < tamanho_instrucoes; i++) {
+    for (int i = 0; i < quantidade_log-1; i++) {
         printf("    %02d - %s\n", 4*i, log_instrucoes[i+1]);
     }
     printf("\n");
@@ -50,8 +49,7 @@ void recebe_instrucao(char instrucao[], int quantidade_log) {
 }
 
 void atualiza_quantidade_log_pc_log_instrucoes(int *quantidade_log, int *pc, char **log_instrucoes, char instrucao[]) {
-    int posicao_log = *pc / 4;
-    strcpy(log_instrucoes[posicao_log+1], instrucao);
+    strcpy(log_instrucoes[*quantidade_log], instrucao);
     *pc += 4;
     *quantidade_log = (*pc+4)/4;
 }
@@ -328,7 +326,7 @@ int main() {
     menu_inicial();
 
     while (1) {
-        mostra_main_pc_instrucoes_registradores(s0, s1, s2, s3, s4, s5, s6, s7, pc, log_instrucoes);
+        mostra_main_pc_instrucoes_registradores(s0, s1, s2, s3, s4, s5, s6, s7, quantidade_log, log_instrucoes);
 
         char instrucao[30];
         recebe_instrucao(instrucao, quantidade_log);
