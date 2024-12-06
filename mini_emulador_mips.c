@@ -47,7 +47,8 @@ int mostra_main_pc_instrucoes_registradores(char **log_instrucoes, int quantidad
 int recebe_instrucao(char instrucao[], int quantidade_log) {
     printf("Instrucao %d: ", quantidade_log+1);
     fflush(stdin);
-    gets(instrucao);
+    fgets(instrucao, 30, stdin);
+    instrucao[strcspn(instrucao, "\n")] = '\0';
     if (instrucao[0] == '0') {return 0;}
     printf("\n");
     return 1;
