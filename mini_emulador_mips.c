@@ -332,12 +332,11 @@ int main() {
                 if (executa_instrucao(instrucao, quantidade_partes, &quantidade_instrucoes, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7)) {
                     atualiza_log_quantidade_instrucoes(log_instrucoes, instrucao, &quantidade_instrucoes);
                     log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_instrucoes, quantidade_instrucoes+1, 30);
-                    continue;
                 } else {falha_execucao();}
             } else {instrucao_invalida();}
         } else {break;}
     }
-    
+
     libera_log_instrucoes(log_instrucoes, quantidade_instrucoes);
     return 0;
 }
