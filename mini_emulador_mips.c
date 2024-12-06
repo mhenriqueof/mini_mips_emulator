@@ -16,7 +16,7 @@ void abertura() {
     printf("    Imediatas: addi, li\n");
     printf("    Salto: j\n");
     sleep(1);
-    printf("  Regras\n");
+    printf("  Orientacoes\n");
     printf("    Utilizar apenas letras minusculas\n");
     printf("    Utilizar espaco depois da virgula (div $s3, $s0, $s5)\n");
     printf("    Utilizar somente registradores do tipo saved (s0, s1, ..., s7)\n");
