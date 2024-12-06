@@ -21,12 +21,14 @@ void abertura() {
     printf("    Utilizar espaco depois da virgula (div $s3, $s0, $s5)\n");
     printf("    Utilizar somente registradores do tipo saved (s0, s1, ..., s7)\n");
     sleep(1);
+    printf("  Digite 0 para sair\n");
+    sleep(1);
     linha();
 } 
 
-void mostra_main_pc_instrucoes_registradores(char **log_instrucoes, int quantidade_log, int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7) {
+int mostra_main_pc_instrucoes_registradores(char **log_instrucoes, int quantidade_instrucoes, int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7) {
     printf("main:\n");
-    for (int i = 0; i < quantidade_log; i++) {
+    for (int i = 0; i < quantidade_instrucoes; i++) {
         printf("    %02d - %s\n", 4*i, log_instrucoes[i]);
     }
     printf("\n");
@@ -39,19 +41,22 @@ void mostra_main_pc_instrucoes_registradores(char **log_instrucoes, int quantida
     printf("s6: %d\n", s6);
     printf("s7: %d\n", s7);
     linha();
+    return 1;
 }
 
-void recebe_instrucao(char instrucao[], int quantidade_log) {
+int recebe_instrucao(char instrucao[], int quantidade_log) {
     printf("Instrucao %d: ", quantidade_log+1);
     fflush(stdin);
     gets(instrucao);
+    if (instrucao[0] == '0') {return 0;}
     printf("\n");
+    return 1;
 }
 
-void atualiza_log_instrucoes_quantidade_log(char **log_instrucoes, char instrucao[], int *quantidade_log) {
+void atualiza_log_quantidade_instrucoes(char **log_instrucoes, char instrucao[], int *quantidade_instrucoes) {
     if (instrucao[0] == 'j') {return;}
-    strcpy(log_instrucoes[*quantidade_log], instrucao);
-    *quantidade_log += 1;
+    strcpy(log_instrucoes[*quantidade_instrucoes], instrucao);
+    *quantidade_instrucoes += 1;
 }
 
 void instrucao_invalida() {
@@ -60,6 +65,11 @@ void instrucao_invalida() {
     linha();
 }
 
+void falha_execucao() {
+    printf("Falha na execucao da instrucao.\n");
+    sleep(1.5);
+    linha();
+}
 
 // Verificar instrucao
 int verifica_quantidade_partes();
@@ -85,8 +95,7 @@ int verifica_quantidade_partes(char instrucao[], int *quantidade_partes) {
         token = strtok(NULL, " ");
         cont++;
         if (cont > 4) {return 0;}
-    } 
-    if (cont < 2) {return 0;}
+    } if (cont < 2) {return 0;}
     *quantidade_partes = cont;
     return 1;
 }
@@ -134,18 +143,16 @@ int verifica_parte_central(char instrucao[], int quantidade_partes) {
     if (token[0] != '$') {return 0;}
     if (token[1] != 's') {return 0;}
     if (token[2] < 48 || token[2] > 55) {return 0;}
-    if (tamanho == 4) {
-        if (token[3] != ',') {return 0;}
-    }
+    if (token[3] != ',' && tamanho == 4) {return 0;}
     return 1;
 }
 
 int final_com_registrador();
-int final_com_label();
 int final_com_numero();
+int final_com_label();
 int verifica_ser_registrador();
-int verifica_ser_label();
 int verifica_ser_numero();
+int verifica_ser_label();
 int verifica_parte_final(char instrucao[], int quantidade_partes) {
     char copia_instrucao[30];
     strcpy(copia_instrucao, instrucao);
@@ -160,14 +167,6 @@ int verifica_parte_final(char instrucao[], int quantidade_partes) {
             }
         }
     } 
-    if (final_com_label(operacao)) {
-        for (int i = 2; i <= quantidade_partes; i++) {
-            char *token = strtok(NULL, " ");
-            if (i == quantidade_partes) {
-                if (!verifica_ser_label(token)) {return 0;}
-            }
-        }
-    } 
     if (final_com_numero(operacao)) {
         for (int i = 2; i <= quantidade_partes; i++) {
             char *token = strtok(NULL, " ");
@@ -176,29 +175,36 @@ int verifica_parte_final(char instrucao[], int quantidade_partes) {
             }
         }
     }
+    if (final_com_label(operacao)) {
+        for (int i = 2; i <= quantidade_partes; i++) {
+            char *token = strtok(NULL, " ");
+            if (i == quantidade_partes) {
+                if (!verifica_ser_label(token)) {return 0;}
+            }
+        }
+    }  
     return 1;
 } int final_com_registrador(char operacao[]) {
     return strcmp(operacao, "add") == 0 || strcmp(operacao, "sub") == 0 || strcmp(operacao, "mul") == 0 || strcmp(operacao, "div") == 0;
-} int final_com_label(char operacao[]) {
-    return strcmp(operacao, "j") == 0;
 } int final_com_numero(char operacao[]) {
     return strcmp(operacao, "li") == 0 || strcmp(operacao, "addi") == 0;
-} int verifica_ser_label(char token[]) {
-    if (strcmp(token, "main") != 0) {return 0;}
-    return 1;
-}  int verifica_ser_numero(char token[]) {
+} int final_com_label(char operacao[]) {
+    return strcmp(operacao, "j") == 0;
+} int verifica_ser_numero(char token[]) {
     int tamanho = strlen(token);
     for (int i = 0; i < tamanho; i++) {
-        if (token[0] == '-') {continue;}
+        if (i == 0 && token[0] == '-' && tamanho != 1) {continue;}
         if (token[i] < 48 || token[i] > 57) {return 0;}
     }
     return 1;
-} 
-
+} int verifica_ser_label(char token[]) {
+    if (strcmp(token, "main") != 0) {return 0;}
+    return 1;
+}  
 
 // Executar instrucao
 int *obtem_ponteiro(char operando, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7);
-int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_log, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7) {
+int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_instrucoes, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7) {
     char copia_instrucao[30];
     strcpy(copia_instrucao, instrucao);
 
@@ -250,7 +256,7 @@ int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_l
     }
     if (quantidade_partes == 2) {
         if (strcmp(operacao, "j") == 0) {
-            *quantidade_log = 0;
+            *quantidade_instrucoes = 0;
             return 1;
         }
     }
@@ -266,7 +272,6 @@ int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_l
     if (operando == '7') {return s7;}
 }
 
-
 // Alocacao dinamica
 char **aloca_log_instrucoes(int linhas, int colunas) {
     char **log_instrucoes = (char**) malloc(linhas * sizeof(char*));
@@ -274,7 +279,6 @@ char **aloca_log_instrucoes(int linhas, int colunas) {
         printf("Falha ao alocar log instrucoes.\n");
         exit(1);
     }
-
     for (int i = 0; i < linhas; i++) {
         log_instrucoes[i] = (char*) malloc(colunas * sizeof(char));
         if (log_instrucoes[i] == 0) {
@@ -289,21 +293,20 @@ char **aloca_log_instrucoes(int linhas, int colunas) {
     return log_instrucoes;
 }
 
-char **realoca_log_instrucoes(char **log_instrucoes, int linhas_atual, int novas_linhas, int colunas) {
-    char **novo_log_instrucoes = (char**) realloc(log_instrucoes, novas_linhas * sizeof(char*));
+char **realoca_log_instrucoes(char **log_instrucoes, int linhas_atual, int linhas_novas, int colunas) {
+    char **novo_log_instrucoes = (char**) realloc(log_instrucoes, linhas_novas * sizeof(char*));
     if (novo_log_instrucoes == 0) {
         printf("Falha ao realocar log instrucoes.\n");
-        return 0;
+        exit(1);
     }
-
-    for (int i = linhas_atual; i < novas_linhas; i++) {
+    for (int i = linhas_atual; i < linhas_novas; i++) {
         novo_log_instrucoes[i] = (char*) malloc(colunas* sizeof(char));
         if (novo_log_instrucoes[i] == 0) {
             printf("Falha ao realocar log instrucoes.\n");
             for (int j = linhas_atual; j < i; j++) {
                 free(novo_log_instrucoes[j]);
             }
-            return 0;
+            exit(1);
         }
     }
     return novo_log_instrucoes;
@@ -316,31 +319,24 @@ void libera_log_instrucoes(char **log_instrucoes, int linhas) {
     free(log_instrucoes);
 }
 
-
 // Emulador
 int main() {
-    int s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, quantidade_log = 0, quantidade_partes;
-    char **log_instrucoes = aloca_log_instrucoes(quantidade_log+1, 30);
-    if (log_instrucoes == 0) {return 1;}
+    int s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, quantidade_instrucoes = 0, quantidade_partes;
+    char **log_instrucoes = aloca_log_instrucoes(1, 30), instrucao[30];
     
     abertura();
-
-    while (1) {
-        mostra_main_pc_instrucoes_registradores(log_instrucoes, quantidade_log, s0, s1, s2, s3, s4, s5, s6, s7);
-
-        char instrucao[30];
-        recebe_instrucao(instrucao, quantidade_log);
-
-        if (verifica_instrucao(instrucao, &quantidade_partes)) {
-            if (executa_instrucao(instrucao, quantidade_partes, &quantidade_log, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7)) {
-                atualiza_log_instrucoes_quantidade_log(log_instrucoes, instrucao, &quantidade_log);
-                log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_log, quantidade_log+1, 30);
-                if (log_instrucoes == 0) {break;}
-                continue;
-            }
-        }
-        instrucao_invalida();
+    
+    while (mostra_main_pc_instrucoes_registradores(log_instrucoes, quantidade_instrucoes, s0, s1, s2, s3, s4, s5, s6, s7)) {
+        if (recebe_instrucao(instrucao, quantidade_instrucoes)) {
+            if (verifica_instrucao(instrucao, &quantidade_partes)) {
+                if (executa_instrucao(instrucao, quantidade_partes, &quantidade_instrucoes, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7)) {
+                    atualiza_log_quantidade_instrucoes(log_instrucoes, instrucao, &quantidade_instrucoes);
+                    log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_instrucoes, quantidade_instrucoes+1, 30);
+                    continue;
+                } else {falha_execucao();}
+            } else {instrucao_invalida();}
+        } else {break;}
     }
-    libera_log_instrucoes(log_instrucoes, quantidade_log);
+    libera_log_instrucoes(log_instrucoes, quantidade_instrucoes);
     return 0;
 }
