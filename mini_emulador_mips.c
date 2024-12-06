@@ -337,6 +337,7 @@ int main() {
             } else {instrucao_invalida();}
         } else {break;}
     }
+    
     libera_log_instrucoes(log_instrucoes, quantidade_instrucoes);
     return 0;
 }
