@@ -18,7 +18,7 @@ void menu_inicial() {
     sleep(1);
     printf("  Regras\n");
     printf("    Utilizar apenas letras minusculas\n");
-    printf("    Utilizar espaco depois das virgulas (div $s3, $s0, $s5)\n");
+    printf("    Utilizar espaco depois da virgula (div $s3, $s0, $s5)\n");
     printf("    Utilizar somente registradores do tipo saved (s0, s1, ..., s7)\n");
     sleep(1);
     linha();
