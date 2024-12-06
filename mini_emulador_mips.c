@@ -319,7 +319,7 @@ void libera_log_instrucoes(char **log_instrucoes, int linhas) {
 
 // Emulador
 int main() {
-    int s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, quantidade_log = 0, quantidade_partes = 0;
+    int s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, quantidade_log = 0, quantidade_partes;
     char **log_instrucoes = aloca_log_instrucoes(quantidade_log+1, 30);
     if (log_instrucoes == 0) {return 1;}
     
