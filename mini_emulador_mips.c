@@ -8,7 +8,7 @@ void linha() {
     printf("--------------------------------------------------\n");
 }
 
-void menu_inicial() {
+void abertura() {
     printf("Mini Emulador MIPS\n");
     sleep(1);
     printf("  Operacoes disponiveis\n");
@@ -323,7 +323,7 @@ int main() {
     char **log_instrucoes = aloca_log_instrucoes(quantidade_log+1, 30);
     if (log_instrucoes == 0) {return 1;}
     
-    menu_inicial();
+    abertura();
 
     while (1) {
         mostra_main_pc_instrucoes_registradores(log_instrucoes, quantidade_log, s0, s1, s2, s3, s4, s5, s6, s7);
