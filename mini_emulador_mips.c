@@ -24,10 +24,10 @@ void menu_inicial() {
     linha();
 } 
 
-void mostra_main_pc_instrucoes_registradores(int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7, int quantidade_log, char **log_instrucoes) {
+void mostra_main_pc_instrucoes_registradores(char **log_instrucoes, int quantidade_log, int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7) {
     printf("main:\n");
-    for (int i = 0; i < quantidade_log-1; i++) {
-        printf("    %02d - %s\n", 4*i, log_instrucoes[i+1]);
+    for (int i = 0; i < quantidade_log; i++) {
+        printf("    %02d - %s\n", 4*i, log_instrucoes[i]);
     }
     printf("\n");
     printf("s0: %d\n", s0);
@@ -42,16 +42,16 @@ void mostra_main_pc_instrucoes_registradores(int s0, int s1, int s2, int s3, int
 }
 
 void recebe_instrucao(char instrucao[], int quantidade_log) {
-    printf("Instrucao %d: ", quantidade_log);
+    printf("Instrucao %d: ", quantidade_log+1);
     fflush(stdin);
     gets(instrucao);
     printf("\n");
 }
 
-void atualiza_log_instrucoes_pc_quantidade_log(char **log_instrucoes, char instrucao[], int *pc, int *quantidade_log) {
+void atualiza_log_instrucoes_quantidade_log(char **log_instrucoes, char instrucao[], int *quantidade_log) {
+    if (instrucao[0] == 'j') {return;}
     strcpy(log_instrucoes[*quantidade_log], instrucao);
-    *pc += 4;
-    *quantidade_log = (*pc+4)/4;
+    *quantidade_log += 1;
 }
 
 void instrucao_invalida() {
@@ -198,7 +198,7 @@ int verifica_parte_final(char instrucao[], int quantidade_partes) {
 
 // Executar instrucao
 int *obtem_ponteiro(char operando, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7);
-int executa_instrucao(char instrucao[], int quantidade_partes, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7, int *pc) {
+int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_log, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7) {
     char copia_instrucao[30];
     strcpy(copia_instrucao, instrucao);
 
@@ -250,7 +250,7 @@ int executa_instrucao(char instrucao[], int quantidade_partes, int *s0, int *s1,
     }
     if (quantidade_partes == 2) {
         if (strcmp(operacao, "j") == 0) {
-            *pc = -4;
+            *quantidade_log = 0;
             return 1;
         }
     }
@@ -319,21 +319,21 @@ void libera_log_instrucoes(char **log_instrucoes, int linhas) {
 
 // Emulador
 int main() {
-    int s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, pc = 0, quantidade_partes = 0, quantidade_log = 1;
+    int s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, quantidade_log = 0, quantidade_partes = 0;
     char **log_instrucoes = aloca_log_instrucoes(quantidade_log+1, 30);
     if (log_instrucoes == 0) {return 1;}
     
     menu_inicial();
 
     while (1) {
-        mostra_main_pc_instrucoes_registradores(s0, s1, s2, s3, s4, s5, s6, s7, quantidade_log, log_instrucoes);
+        mostra_main_pc_instrucoes_registradores(log_instrucoes, quantidade_log, s0, s1, s2, s3, s4, s5, s6, s7);
 
         char instrucao[30];
         recebe_instrucao(instrucao, quantidade_log);
 
         if (verifica_instrucao(instrucao, &quantidade_partes)) {
-            if (executa_instrucao(instrucao, quantidade_partes, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7, &pc)) {
-                atualiza_log_instrucoes_pc_quantidade_log(log_instrucoes, instrucao, &pc, &quantidade_log);
+            if (executa_instrucao(instrucao, quantidade_partes, &quantidade_log, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7)) {
+                atualiza_log_instrucoes_quantidade_log(log_instrucoes, instrucao, &quantidade_log);
                 log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_log, quantidade_log+1, 30);
                 if (log_instrucoes == 0) {break;}
                 continue;
