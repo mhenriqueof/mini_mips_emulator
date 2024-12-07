@@ -318,7 +318,7 @@ void libera_log_instrucoes(char **log_instrucoes, int linhas) {
 // Emulador
 int main() {
     int registradores[] = {0,0,0,0,0,0,0,0}, quantidade_instrucoes = 0, tamanho_instrucao = 30, quantidade_partes;
-    char **log_instrucoes = aloca_log_instrucoes(1, tamanho_instrucao), instrucao[tamanho_instrucao];
+    char **log_instrucoes = aloca_log_instrucoes(quantidade_instrucoes, tamanho_instrucao), instrucao[tamanho_instrucao];
     
     abertura();
     
@@ -326,8 +326,8 @@ int main() {
         if (recebe_instrucao(instrucao, tamanho_instrucao, quantidade_instrucoes)) {
             if (verifica_instrucao(instrucao, &quantidade_partes)) {
                 if (executa_instrucao(instrucao, quantidade_partes, &quantidade_instrucoes, registradores)) {
-                    atualiza_log_quantidade_instrucoes(log_instrucoes, instrucao, &quantidade_instrucoes);
                     log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_instrucoes, quantidade_instrucoes+1, tamanho_instrucao);
+                    atualiza_log_quantidade_instrucoes(log_instrucoes, instrucao, &quantidade_instrucoes);
                 } else {falha_execucao();}
             } else {instrucao_invalida();}
         } else {break;}
