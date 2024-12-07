@@ -318,7 +318,7 @@ void libera_log_instrucoes(char **log_instrucoes, int linhas) {
 // Emulador
 int main() {
     int registradores[] = {0,0,0,0,0,0,0,0}, quantidade_instrucoes = 0, tamanho_instrucao = 30, quantidade_partes;
-    char **log_instrucoes = aloca_log_instrucoes(quantidade_instrucoes+1, tamanho_instrucao), instrucao[tamanho_instrucao];
+    char **log_instrucoes = aloca_log_instrucoes(1, tamanho_instrucao), instrucao[tamanho_instrucao];
     
     abertura();
     
