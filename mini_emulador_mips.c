@@ -43,8 +43,8 @@ int recebe_instrucao(char instrucao[], int tamanho_instrucao,int quantidade_inst
     printf("Instrucao %d: ", quantidade_instrucoes+1);
     fflush(stdin);
     fgets(instrucao, tamanho_instrucao, stdin);
-    instrucao[strcspn(instrucao, "\n")] = '\0';
     if (instrucao[0] == '0') {return 0;}
+    instrucao[strcspn(instrucao, "\n")] = '\0';
     printf("\n");
     return 1;
 }
