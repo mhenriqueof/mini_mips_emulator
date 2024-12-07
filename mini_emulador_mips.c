@@ -39,10 +39,10 @@ int mostra_main_pc_instrucoes_registradores(char **log_instrucoes, int quantidad
     return 1;
 }
 
-int recebe_instrucao(char instrucao[], int quantidade_log) {
+int recebe_instrucao(char instrucao[], int tamanho_instrucao,int quantidade_log) {
     printf("Instrucao %d: ", quantidade_log+1);
     fflush(stdin);
-    fgets(instrucao, 30, stdin);
+    fgets(instrucao, tamanho_instrucao, stdin);
     instrucao[strcspn(instrucao, "\n")] = '\0';
     if (instrucao[0] == '0') {return 0;}
     printf("\n");
@@ -317,17 +317,17 @@ void libera_log_instrucoes(char **log_instrucoes, int linhas) {
 
 // Emulador
 int main() {
-    int registradores[] = {0,0,0,0,0,0,0,0}, quantidade_instrucoes = 0, quantidade_partes;
-    char **log_instrucoes = aloca_log_instrucoes(1, 30), instrucao[30];
+    int registradores[] = {0,0,0,0,0,0,0,0}, tamanho_instrucao = 30, quantidade_instrucoes = 0, quantidade_partes;
+    char **log_instrucoes = aloca_log_instrucoes(1, tamanho_instrucao), instrucao[tamanho_instrucao];
     
     abertura();
     
     while (mostra_main_pc_instrucoes_registradores(log_instrucoes, quantidade_instrucoes, registradores)) {
-        if (recebe_instrucao(instrucao, quantidade_instrucoes)) {
+        if (recebe_instrucao(instrucao, tamanho_instrucao, quantidade_instrucoes)) {
             if (verifica_instrucao(instrucao, &quantidade_partes)) {
                 if (executa_instrucao(instrucao, quantidade_partes, &quantidade_instrucoes, registradores)) {
                     atualiza_log_quantidade_instrucoes(log_instrucoes, instrucao, &quantidade_instrucoes);
-                    log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_instrucoes, quantidade_instrucoes+1, 30);
+                    log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_instrucoes, quantidade_instrucoes+1, tamanho_instrucao);
                 } else {falha_execucao();}
             } else {instrucao_invalida();}
         } else {break;}
