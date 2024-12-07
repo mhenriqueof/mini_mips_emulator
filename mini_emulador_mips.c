@@ -26,20 +26,15 @@ void abertura() {
     linha();
 } 
 
-int mostra_main_pc_instrucoes_registradores(char **log_instrucoes, int quantidade_instrucoes, int s0, int s1, int s2, int s3, int s4, int s5, int s6, int s7) {
+int mostra_main_pc_instrucoes_registradores(char **log_instrucoes, int quantidade_instrucoes, int registradores[]) {
     printf("main:\n");
     for (int i = 0; i < quantidade_instrucoes; i++) {
         printf("    %02d - %s\n", 4*i, log_instrucoes[i]);
     }
     printf("\n");
-    printf("s0: %d\n", s0);
-    printf("s1: %d\n", s1);
-    printf("s2: %d\n", s2);
-    printf("s3: %d\n", s3);
-    printf("s4: %d\n", s4);
-    printf("s5: %d\n", s5);
-    printf("s6: %d\n", s6);
-    printf("s7: %d\n", s7);
+    for (int i = 0; i <= 7; i++) {
+        printf("s%d: %d\n", i, registradores[i]);
+    }
     linha();
     return 1;
 }
@@ -204,8 +199,8 @@ int verifica_parte_final(char instrucao[], int quantidade_partes) {
 }  
 
 // Executar instrucao
-int *obtem_ponteiro(char operando, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7);
-int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_instrucoes, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7) {
+int *obtem_ponteiro(char operando, int registradores[]);
+int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_instrucoes, int registradores[]) {
     char copia_instrucao[30];
     strcpy(copia_instrucao, instrucao);
 
@@ -218,9 +213,9 @@ int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_i
         parte3 = strtok(NULL, " ");
         
         char operando1 = parte1[2], operando2 = parte2[2], operando3 = parte3[2];
-        int *registrador1 = obtem_ponteiro(operando1, s0, s1, s2, s3, s4, s5, s6, s7);
-        int *registrador2 = obtem_ponteiro(operando2, s0, s1, s2, s3, s4, s5, s6, s7);
-        int *registrador3 = obtem_ponteiro(operando3, s0, s1, s2, s3, s4, s5, s6, s7);
+        int *registrador1 = obtem_ponteiro(operando1, registradores);
+        int *registrador2 = obtem_ponteiro(operando2, registradores);
+        int *registrador3 = obtem_ponteiro(operando3, registradores);
 
         if (strcmp(operacao, "add") == 0) {
             *registrador1 = *registrador2 + *registrador3;
@@ -248,7 +243,7 @@ int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_i
         parte2 = strtok(NULL, " ");
         
         char operando1 = parte1[2];
-        int *registrador1 = obtem_ponteiro(operando1, s0, s1, s2, s3, s4, s5, s6, s7);
+        int *registrador1 = obtem_ponteiro(operando1, registradores);
 
         if (strcmp(operacao, "li") == 0) {
             *registrador1 = atoi(parte2);
@@ -262,15 +257,15 @@ int executa_instrucao(char instrucao[], int quantidade_partes, int *quantidade_i
         }
     }
     return 0;
-} int *obtem_ponteiro(char operando, int *s0, int *s1, int *s2, int *s3, int *s4, int *s5, int *s6, int *s7) {
-    if (operando == '0') {return s0;}
-    if (operando == '1') {return s1;}
-    if (operando == '2') {return s2;}
-    if (operando == '3') {return s3;}
-    if (operando == '4') {return s4;}
-    if (operando == '5') {return s5;}
-    if (operando == '6') {return s6;}
-    if (operando == '7') {return s7;}
+} int *obtem_ponteiro(char operando, int registradores[]) {
+    if (operando == '0') {return &registradores[0];}
+    if (operando == '1') {return &registradores[1];}
+    if (operando == '2') {return &registradores[2];}
+    if (operando == '3') {return &registradores[3];}
+    if (operando == '4') {return &registradores[4];}
+    if (operando == '5') {return &registradores[5];}
+    if (operando == '6') {return &registradores[6];}
+    if (operando == '7') {return &registradores[7];}
 }
 
 // Alocacao dinamica
@@ -322,15 +317,15 @@ void libera_log_instrucoes(char **log_instrucoes, int linhas) {
 
 // Emulador
 int main() {
-    int s0 = 0, s1 = 0, s2 = 0, s3 = 0, s4 = 0, s5 = 0, s6 = 0, s7 = 0, quantidade_instrucoes = 0, quantidade_partes;
+    int registradores[] = {0,0,0,0,0,0,0,0}, quantidade_instrucoes = 0, quantidade_partes;
     char **log_instrucoes = aloca_log_instrucoes(1, 30), instrucao[30];
     
     abertura();
     
-    while (mostra_main_pc_instrucoes_registradores(log_instrucoes, quantidade_instrucoes, s0, s1, s2, s3, s4, s5, s6, s7)) {
+    while (mostra_main_pc_instrucoes_registradores(log_instrucoes, quantidade_instrucoes, registradores)) {
         if (recebe_instrucao(instrucao, quantidade_instrucoes)) {
             if (verifica_instrucao(instrucao, &quantidade_partes)) {
-                if (executa_instrucao(instrucao, quantidade_partes, &quantidade_instrucoes, &s0, &s1, &s2, &s3, &s4, &s5, &s6, &s7)) {
+                if (executa_instrucao(instrucao, quantidade_partes, &quantidade_instrucoes, registradores)) {
                     atualiza_log_quantidade_instrucoes(log_instrucoes, instrucao, &quantidade_instrucoes);
                     log_instrucoes = realoca_log_instrucoes(log_instrucoes, quantidade_instrucoes, quantidade_instrucoes+1, 30);
                 } else {falha_execucao();}
