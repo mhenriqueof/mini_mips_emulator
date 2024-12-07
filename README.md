@@ -8,8 +8,8 @@ Created in C for the Computer Architecture subject.
  - sub $s0, $s1, $s2
  - mul $s0, $s1, $s2
  - div $s0, $s1, $s2
- - addi $s0, $s1, 100
- - li $s0, 100
+ - addi $s0, $s1, 1
+ - li $s0, 1
  - j main
 
 Thanks!
